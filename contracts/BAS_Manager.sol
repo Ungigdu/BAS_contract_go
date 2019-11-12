@@ -34,7 +34,7 @@ contract BAS_Manager is owned{
     function checkAllowance() public view returns(uint256){
         return token.allowance(msg.sender,address(this));
     }
-    function executeAllowanceBySender(uint256 value) private{
+    function executeAllowanceBySender(uint256 value) internal{
         token.transferFrom(msg.sender,address(this),value);
     }
     function rent(string memory key,uint8 y,bytes memory data) public{
@@ -55,7 +55,7 @@ contract BAS_Manager is owned{
         return keccak256(abi.encodePacked(key));
     }
     function checkAvailablity(bytes32 hashKey,bytes4 f, bytes16 s, bytes32 b) internal view returns (bool){
-        if(extractOwner(hashKey)==address(0) && IPv4Mapping[f]==0&&IPv6Mapping[s]==0&&BCAddressMapping[b]==0){
+        if(extractOwner(hashKey)==address(0) && IPv4Mapping[f]==0 && IPv6Mapping[s]==0 && BCAddressMapping[b]==0){
             return true;
         }else{
             return false;
@@ -73,9 +73,15 @@ contract BAS_Manager is owned{
     function remember(bytes32 hashKey,bytes4 f, bytes16 s, bytes1 l,bytes32 b) internal{
         Record memory r = Record({IPv4:f,IPv6:s,BCLength:l,BCAddress:b,EthAddress:msg.sender});
         DataRecords[hashKey] = r;
-        IPv4Mapping[f] = hashKey;
-        IPv6Mapping[s] = hashKey;
-        BCAddressMapping[b] = hashKey;
+        if(f!=0){
+            IPv4Mapping[f] = hashKey;
+        }
+        if(s!=0){
+            IPv6Mapping[s] = hashKey;
+        }
+        if(b!=0){
+            BCAddressMapping[b] = hashKey;
+        }
     }
     function insert (string memory key, bytes memory data) internal{
         require(data.length==53,"bad format");
