@@ -13,7 +13,7 @@ import (
 const (
 	RopstenNetworkAccessPoint = "https://ropsten.infura.io/v3/8b8db3cca50a4fcf97173b7619b1c4c3"
 	BASTokenAddress           = "0x3058A7Ed6a0E15691F9e309cbe982A820928e055"
-	BASManagerAddress         = "0xf3f43AB2A248846D5C320eFE8dD580141F8B1792"
+	BASManagerAddress         = "0xf1b2973FA17611C43D859A11DE508CE9997ee3e9"
 )
 
 var Token *contracts.BASToken
