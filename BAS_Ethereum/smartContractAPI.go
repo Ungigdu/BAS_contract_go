@@ -1,7 +1,7 @@
 package BAS_Ethereum
 
 import (
-	"BAS_contract_interface/contracts"
+	"github.com/Ungigdu/BAS_contract_interface/contracts"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
