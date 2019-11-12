@@ -65,6 +65,11 @@ contract BAS_Manager is owned{
         Record memory r = DataRecords[hashKey];
         return r.EthAddress;
     }
+    function forget(bytes4 f, bytes16 s,bytes32 b) internal{
+        IPv4Mapping[f] = 0;
+        IPv6Mapping[s] = 0;
+        BCAddressMapping[b] = 0;
+    }
     function remember(bytes32 hashKey,bytes4 f, bytes16 s, bytes1 l,bytes32 b) internal{
         Record memory r = Record({IPv4:f,IPv6:s,BCLength:l,BCAddress:b,EthAddress:msg.sender});
         DataRecords[hashKey] = r;
@@ -82,12 +87,11 @@ contract BAS_Manager is owned{
     function change (string memory key, bytes memory data) public{
         require(data.length==53,"bad format");
         bytes32 hashKey = hash(key);
+        Record memory old = DataRecords[hashKey];
+        forget(old.IPv4,old.IPv6,old.BCAddress);
         (bytes4 f, bytes16 s, bytes1 l,bytes32 b) = split(data);
         require(extractOwner(hashKey)==msg.sender,"not owned");
         remember(hashKey,f,s,l,b);
-    }
-    function checkLength(bytes memory input) public pure returns (uint256) {
-        return input.length;
     }
     function queryByHash(bytes32 hashKey) public view returns (bytes32,bytes4,bytes16,bytes1,bytes32){
         Record memory r = DataRecords[hashKey];
