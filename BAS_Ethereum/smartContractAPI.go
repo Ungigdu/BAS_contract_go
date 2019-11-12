@@ -23,6 +23,7 @@ type DomainRecord struct {
 	keyHash [32]byte
 	IPv4    [4]byte
 	IPv6 	[16]byte
+	BCLength [1]byte
 	BCAddress [32]byte
 }
 
@@ -82,7 +83,7 @@ func Change(cipherKey,password,key string,data []byte)(string,error){
 	return buildTxResponse(Manager.Change(auth,key,data))
 }
 
-func buildQueryResult(h [32]byte,f [4]byte, s [16]byte, b [32]byte,err error) (DomainRecord,error){
+func buildQueryResult(h [32]byte,f [4]byte, s [16]byte, l [1]byte, b [32]byte,err error) (DomainRecord,error){
 	if err!=nil{
 		return DomainRecord{},err
 	}
@@ -90,6 +91,7 @@ func buildQueryResult(h [32]byte,f [4]byte, s [16]byte, b [32]byte,err error) (D
 		keyHash:   h,
 		IPv4:      f,
 		IPv6:      s,
+		BCLength:  l,
 		BCAddress: b,
 	},nil
 }
