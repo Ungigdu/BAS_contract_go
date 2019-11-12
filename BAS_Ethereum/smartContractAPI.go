@@ -43,7 +43,7 @@ func RecoverContract(){
 	}
 }
 
-func OpenWallet(cipherKey,password string) (*bind.TransactOpts, error){
+func openWallet(cipherKey,password string) (*bind.TransactOpts, error){
 	auth, err := bind.NewTransactor(strings.NewReader(cipherKey), password)
 	if err != nil {
 		return nil, err
@@ -58,12 +58,16 @@ func buildTxResponse(tx *types.Transaction,err error)(string,error){
 		return tx.Hash().String(),nil
 	}
 }
-func ApproveToken(ethAccount common.Address,value *big.Int) (string,error){
-	return buildTxResponse(Token.Approve(nil,ethAccount,value))
+func ApproveToken(cipherKey,password,key string,ethAccount common.Address,value *big.Int) (string,error){
+	auth,err:= openWallet(cipherKey,password)
+	if err!=nil{
+		return "",err
+	}
+	return buildTxResponse(Token.Approve(auth,ethAccount,value))
 }
 
 func Rent(cipherKey,password,key string, year uint8 ,data []byte)(string,error){
-	auth,err:=OpenWallet(cipherKey,password)
+	auth,err:= openWallet(cipherKey,password)
 	if err!=nil{
 		return "",err
 	}
@@ -71,7 +75,7 @@ func Rent(cipherKey,password,key string, year uint8 ,data []byte)(string,error){
 }
 
 func Change(cipherKey,password,key string,data []byte)(string,error){
-	auth,err:=OpenWallet(cipherKey,password)
+	auth,err:= openWallet(cipherKey,password)
 	if err!=nil{
 		return "",err
 	}
