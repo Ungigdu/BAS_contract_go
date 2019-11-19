@@ -13,11 +13,11 @@ import (
 var (
 	RopstenNetworkAccessPoint = "https://ropsten.infura.io/v3/8b8db3cca50a4fcf97173b7619b1c4c3"
 	BASTokenAddress           = "0x3058A7Ed6a0E15691F9e309cbe982A820928e055"
-	BASManagerAddress         = "0x8Cd10021DA4fDb92DdC5dd063b89B087125D7e19"
+	BASManagerSimpleAddress         = "0x8Cd10021DA4fDb92DdC5dd063b89B087125D7e19"
 )
 
 var Token *contracts.BASToken
-var Manager *contracts.BASManager
+var Manager *contracts.BASManagerSimple
 
 type DomainRecord struct {
 	keyHash [32]byte
@@ -25,6 +25,7 @@ type DomainRecord struct {
 	IPv6 	[16]byte
 	BCLength [1]byte
 	BCAddress [32]byte
+	EthAddress common.Address
 }
 
 func RecoverContract(){
@@ -37,7 +38,7 @@ func RecoverContract(){
 	}else{
 		Token = token
 	}
-	if manager,err:=contracts.NewBASManager(common.HexToAddress(BASManagerAddress),conn);err!=nil{
+	if manager,err:=contracts.NewBASManagerSimple(common.HexToAddress(BASManagerSimpleAddress),conn);err!=nil{
 		panic(err)
 	}else{
 		Manager = manager
@@ -83,7 +84,7 @@ func Change(cipherKey,password,key string,data []byte)(string,error){
 	return buildTxResponse(Manager.Change(auth,key,data))
 }
 
-func buildQueryResult(h [32]byte,f [4]byte, s [16]byte, l [1]byte, b [32]byte,err error) (DomainRecord,error){
+func buildQueryResult(h [32]byte,f [4]byte, s [16]byte, l [1]byte, b [32]byte,a common.Address,err error) (DomainRecord,error){
 	if err!=nil{
 		return DomainRecord{},err
 	}
@@ -93,6 +94,7 @@ func buildQueryResult(h [32]byte,f [4]byte, s [16]byte, l [1]byte, b [32]byte,er
 		IPv6:      s,
 		BCLength:  l,
 		BCAddress: b,
+		EthAddress:a,
 	},nil
 }
 
@@ -100,13 +102,6 @@ func QueryByString(key string) (DomainRecord,error){
 	return buildQueryResult(Manager.QueryByString(nil,key))
 }
 
-func QueryByIPv4(IPv4 [4]byte) (DomainRecord,error){
-	return buildQueryResult(Manager.QueryByIPv4(nil,IPv4))
-}
-
-func QueryByIPv6(IPv6 [16]byte) (DomainRecord,error){
-	return buildQueryResult(Manager.QueryByIPv6(nil,IPv6))
-}
 
 func QueryByBCAddress(bcAddress [32]byte)(DomainRecord,error)  {
 	return buildQueryResult(Manager.QueryByBCAddress(nil,bcAddress))
